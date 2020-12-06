@@ -1,15 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image} from 'react-native';
 import { styles } from './stylesheet';
+import Menu from './components/menu';
+import Buttons from './components/button';
+import Timer from './components/timer';
 import vibrate from './vibrate';
 
-class Timer extends React.Component {
-	render() {
-		return (
-			<Text style={styles.timer}>{this.props.currentTime}</Text>
-		)
-	}
-}
+
 
 class ChangeImage extends React.Component
 {
@@ -41,15 +38,6 @@ class Label extends React.Component {
 	}
 }
 
-class Buttons extends React.Component {
-  render() {
-    return (
-      <View style={styles.button}>
-            <Button title={this.props.title} onPress={this.props.onPress}/>
-          </View>
-    )
-  }
-}
 function leftPadding(n) {
   if (parseInt(n) < 10) {
     return "0" + n.toString();
@@ -58,13 +46,17 @@ function leftPadding(n) {
   }
 }
 
+function getTime(val) {
+  return leftPadding(val) + ":00";
+}
+
 export default class App extends React.Component {
     constructor(props) {
     super(props),
     this.state = {
-      currentTime: "00:04",
-      workTime: "00:04",
-      breakTime: "00:03",
+      currentTime: "01:00",
+      workTime: "01:00",
+      breakTime: "02:00",
       working: true,
       timer: null,
       paused: false,
@@ -72,6 +64,10 @@ export default class App extends React.Component {
       counting: false,
       flowerImg: false,
     }
+
+   this.setWorkTimer = this.setWorkTimer.bind(this);
+   this.setBreakTimer = this.setBreakTimer.bind(this); 
+
    this.playButton = this.playButton.bind(this);
    this.pauseButton = this.pauseButton.bind(this);
    this.countdown = this.countdown.bind(this);
@@ -79,6 +75,26 @@ export default class App extends React.Component {
    this.toggleStatus = this.toggleStatus.bind(this);
 
   }
+  
+  setWorkTimer(val) {
+    let newTime = getTime(val);
+    this.setState({
+      workTime: newTime,
+    });
+    if (!this.state.timer) {
+      this.setState({
+        currentTime: newTime,
+      });
+    }      
+  }
+
+  setBreakTimer(val) {
+    let newTime = getTime(val);
+    this.setState({
+      breakTime: newTime,
+    });
+  }
+
 
   countdown() {
        if (this.state.currentTime === "00:00" && this.state.playing==true) {
@@ -110,8 +126,8 @@ export default class App extends React.Component {
           timer: setInterval(this.countdown, 1000),
           paused: false,
           playing: true,
-
-         });
+        });
+        console.log("olha");
       }
   }
 
@@ -137,7 +153,7 @@ export default class App extends React.Component {
        {
            this.setState({
                currentTime: this.state.breakTime,
-               playing: true,
+               playing: false,
                paused: false,
                working: false,
                //timer: null,
@@ -147,7 +163,7 @@ export default class App extends React.Component {
        else {
             this.setState({
                currentTime: this.state.workTime,
-               playing: true,
+               playing: false,
                paused: false,
                working: true,
                //timer: null,
@@ -177,14 +193,31 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-      <Timer currentTime={this.state.currentTime}/>
-      <ChangeImage flowerImg = {this.state.flowerImg}/>
-      <Label paused={this.state.paused} playing={this.state.playing} working={this.state.working}/>
-      <View style={styles.buttonsBlock}>
-      <Buttons title= "Play" onPress = {this.playButton}/>
-      <Buttons title="Pause" onPress={this.pauseButton}/>
-      <Buttons title="Reset" onPress={this.resetButton}/>
-      </View>
+        <Timer currentTime={this.state.currentTime}/>
+        <ChangeImage flowerImg = {this.state.flowerImg}/>
+        <Label paused={this.state.paused} playing={this.state.playing} working={this.state.working}/>
+        <View style={styles.buttonsBlock}>
+          <Buttons title= "Play" onPress = {this.playButton}/>
+          <Buttons title="Pause" onPress={this.pauseButton}/>
+          <Buttons title="Reset" onPress={this.resetButton}/>
+        </View>
+
+        <View style={styles.mainMenuContainer}>
+          <View style={styles.menuContainer}>
+            <Text style ={styles.menuContainerText}>Select work time (min): </Text>
+            <Menu style = {styles.input}
+              selected={Number(this.state.workTime.slice(0, 2)).toString()}
+              onValueChange={this.setWorkTimer}
+            />
+          </View>
+          <View style={styles.menuContainer}>
+            <Text style ={styles.menuContainerText}>Select break time (min): </Text>
+            <Menu style = {styles.input}
+              selected={Number(this.state.breakTime.slice(0, 2)).toString()}
+              onValueChange={this.setBreakTimer}
+            />
+          </View> 
+        </View>
       </View>
 
     );
