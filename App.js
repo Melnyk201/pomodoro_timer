@@ -54,9 +54,9 @@ export default class App extends React.Component {
     constructor(props) {
     super(props),
     this.state = {
-      currentTime: "01:00",
-      workTime: "01:00",
-      breakTime: "02:00",
+      currentTime: "25:00",
+      workTime: "25:00",
+      breakTime: "05:00",
       working: true,
       timer: null,
       paused: false,
@@ -142,9 +142,9 @@ export default class App extends React.Component {
            });
            console.log(this.state.paused);
            }
-           else if (this.state.paused === true && this.state.playing === false) {
+           /*else if (this.state.paused === true && this.state.playing === false) {
                  this.playButton();
-           }
+           }*/
    }
 
    resetButton () {
